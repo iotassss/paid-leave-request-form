@@ -1,0 +1,35 @@
+# Binaries for programs and plugins
+bin/
+pkg/
+tmp/
+
+# Docker files
+*.log
+*.pid
+docker-compose.override.yml
+docker/dev/mysql/data/
+docker/prod/mysql/data/
+
+# Air live reload
+[airの一時ファイル/ログパス]
+
+# Dependency directories (remove if using go mod)
+vendor/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Node modules
+node_modules/
+
+# Git related
+.git
