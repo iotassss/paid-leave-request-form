@@ -1,1 +1,59 @@
-hello
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>休暇申請</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+      body {
+        padding: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>休暇申請</h1>
+      <p>申請に必要なPDFを作成します。</p>
+      <form action="http://localhost:8080/leave/generate" method="post">
+        <div class="form-group">
+          <label for="name">氏名</label>
+          <input type="text" name="name" id="name" class="form-control col-md-4">
+        </div>
+        <div class="form-group">
+          <label for="department">所属</label>
+          <select name="department" id="department" class="form-control col-md-4">
+            <option value="1" selected>GIZTECHPRO事業部</option>
+            <option value="2">営業部</option>
+            <option value="3">経理部</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="position">役職</label>
+          <input type="text" name="position" id="position" class="form-control col-md-4" placeholder="任意で入力してください">
+        </div>
+        <div class="form-group">
+          <label for="start">開始日</label>
+          <input type="date" name="start" id="start" class="form-control col-md-4">
+        </div>
+        <div class="form-group">
+          <label for="end">終了日</label>
+          <input type="date" name="end" id="end" class="form-control col-md-4">
+        </div>
+        <div class="form-group">
+          <label for="type">休暇種別</label>
+          <select name="leave_type" id="type" class="form-control col-md-4">
+            <option value="1" selected>有給休暇</option>
+            <option value="2">特別休暇</option>
+            <option value="3">振替休暇</option>
+            <option value="4">慶弔休暇</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reason">理由</label>
+          <textarea name="reason" id="reason" cols="30" rows="10" class="form-control col-md-4"></textarea>
+        </div>
+        <input type="submit" value="作成" class="btn btn-primary">
+      </form>
+    </div>
+  </body>
+</html>

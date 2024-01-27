@@ -6,7 +6,6 @@ import (
 
 	"github.com/iotassss/paid-leave-request-form/config"
 	"github.com/iotassss/paid-leave-request-form/internal/controller/leaveController"
-	"github.com/iotassss/paid-leave-request-form/internal/controller/todoController"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,13 +19,8 @@ func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.LoadHTMLGlob("template/**/*")
 
-	r.GET("/todos/del", todoController.Delete)
-	r.POST("/todos/save", todoController.Create)
-	r.GET("/todos/edit", todoController.Edit)
-	r.POST("/todos/update", todoController.Update)
-	r.GET("/todos/list", todoController.List)
 	r.GET("/leave/form", leaveController.Form)
-	// r.POST("/leave/genelate", leaveController.Genelate)
+	r.POST("/leave/generate", leaveController.Generate)
 
 	return r
 }

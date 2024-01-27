@@ -1,12 +1,9 @@
+// TODO: タイトルが右によっている？
+// TODO: HTTPヘッダの設定
 package leaveController
 
 import (
-	"fmt"
-	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/iotassss/paid-leave-request-form/internal/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,56 +14,42 @@ func Form(c *gin.Context) {
 	})
 }
 
-// todo list
-func List(c *gin.Context) {
-	var todos []model.Todo
-	model.Db.Find(&todos)
+// フォームから入力された内容を元に、休暇届の設定をしたPDFを生成し、クライアントに送信する関数
+func Generate(c *gin.Context) {
+	// フォームから入力された休暇開始日と終了日を取得
+	start := c.PostForm("start")
+	end := c.PostForm("end")
+	name := c.PostForm("name")
 
-	c.HTML(http.StatusOK, "list.html", gin.H{
-		"title": "Todo",
-		"todos": todos,
-	})
-}
-
-// todo create
-func Create(c *gin.Context) {
-	model.CreateTodo(c.PostForm("content"))
-	c.Redirect(http.StatusMovedPermanently, "/todos/list")
-}
-
-// todo edit
-func Edit(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	// 期間を分割し、分割した期間を取得
+	periods, err := splitPeriod(start, end)
 	if err != nil {
-		log.Fatalln(err)
+		c.AbortWithError(500, err)
+		return
 	}
-	todo, _ := model.GetTodo(id)
 
-	c.HTML(http.StatusOK, "edit.html", gin.H{
-		"title": "Todo",
-		"todo":  todo,
-	})
-}
+	// 分割した期間それぞれに対応する休暇届の設定をしたPDFを生成
+	pdfs := []*leaveReqPdf{}
+	for _, period := range periods {
+		// PDFを生成
+		pdf := leaveReqPdf{}
+		pdf.initPDF()
+		pdf.setLeaveRequestPDF(c, period)
+		// PDFをスライスに追加
+		pdfs = append(pdfs, &pdf)
+	}
 
-// todo update
-func Update(c *gin.Context) {
-	id, _ := strconv.Atoi(c.PostForm("id"))
-	content := c.PostForm("content")
-	todo, _ := model.GetTodo(id)
-	todo.Content = content
-	model.UpdateTodo(todo)
-
-	c.Redirect(http.StatusMovedPermanently, "/todos/list")
-}
-
-// todo delete
-func Delete(c *gin.Context) {
-	fmt.Println("destroy")
-	id, err := strconv.Atoi(c.Query("id"))
+	// PDFのスライスが一つなら、sendPDFを呼び出し、クライアントに送信
+	if len(pdfs) == 1 {
+		sendPDF(c, pdfs[0])
+		return
+	}
+	// PDFのスライスが複数なら、createZipを呼び出し、ZIPファイルを作成
+	zipBytes, err := createZip(pdfs, periods, name)
 	if err != nil {
-		log.Fatalln(err)
+		c.AbortWithError(500, err)
+		return
 	}
-	model.DeleteTodo(id)
-
-	c.Redirect(http.StatusMovedPermanently, "/todos/list")
+	// ZIPファイルをクライアントに送信
+	sendZip(c, zipBytes)
 }

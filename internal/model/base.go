@@ -26,6 +26,6 @@ func init() {
 	if err != nil {
 		fmt.Errorf("error:%v", err)
 	}
-	Db.AutoMigrate(&Todo{})
+	// Db.AutoMigrate(&Todo{})
 
 }
